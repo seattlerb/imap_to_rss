@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<rss version="2.0">
+  <channel>
+    <title>IMAP to RSS</title>
+    <link>imap://izmunuti.segment7.net</link>
+    <description>An RSS feed built from your IMAP server</description>
+    <generator>imap_to_rss version 1.0</generator>
+    <docs>http://cyber.law.harvard.edu/rss/rss.html</docs>
+  </channel>
+</rss>
