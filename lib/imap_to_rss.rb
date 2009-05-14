@@ -18,10 +18,15 @@ class IMAPToRSS < IMAPProcessor
 
   ##
   # A Struct representing an RSS item for the RSS feed.  Contains fields
-  # +title+, +description+, +author+, +pub_date+, +link+, +category+.
+  # +title+, +description+, +author+, +pub_date+, +link+, +guid+, and
+  # +category+.
+  #
+  # Typically, the message id of the email can be used for the guid.  When
+  # the RSS feed is generated, the guid is never used as a URL (isPermaLink is
+  # set to false).
 
   RSSItem = Struct.new :title, :description, :author, :pub_date,
-                       :link, :category
+                       :link, :guid, :category
 
   ##
   # All added RSS items
@@ -32,9 +37,13 @@ class IMAPToRSS < IMAPProcessor
   # Processes command-line options
 
   def self.process_args(args)
+    required_args = {
+      :Output => 'imap_to_rss.rss'
+    }
+
     add_move
 
-    super __FILE__, args do |opts, options|
+    super __FILE__, args, required_args do |opts, options|
       handlers = IMAPToRSS::Handler.handlers.map do |handler|
         handler.name.split('::').last
       end
@@ -43,10 +52,17 @@ class IMAPToRSS < IMAPProcessor
       opts.separator "Handlers: #{handlers.join ', '}"
       opts.separator ''
 
-      opts.on(      "--handler=HANDLER", handlers,
+      opts.on("--handler=HANDLER", handlers,
               "Handler to run",
               "Default: all handlers") do |handler|
         options[:Handler] = handler
+      end
+
+      opts.on("--output=FILE",
+              "File to write the RSS feed to",
+              "Default: #{options[:Output]}",
+              "Options file name: File") do |file|
+        options[:Output] = file
       end
     end
   end
@@ -59,6 +75,7 @@ class IMAPToRSS < IMAPProcessor
 
     @handlers = []
     @rss_items = []
+    @output = options[:Output]
 
     connection = connect options[:Host], options[:Port], options[:SSL],
                          options[:Username], options[:Password], options[:Auth]
@@ -78,10 +95,10 @@ class IMAPToRSS < IMAPProcessor
 
     copyover = []
 
-    if File.exist? 'imap_to_rss.rss' then
+    if File.exist? @output then
       doc = nil
 
-      open 'imap_to_rss.rss', 'rb' do |io| doc = Nokogiri::XML io end
+      open @output, 'rb' do |io| doc = Nokogiri::XML io end
 
       copyover_count = 50 - rss_items.length
 
@@ -111,15 +128,16 @@ class IMAPToRSS < IMAPProcessor
             rss.title item.title
             rss.description item.description
             rss.author item.author
-            rss.pubDate item.pub_date
+            rss.pubDate item.pub_date.rfc822
             rss.link item.link if item.link
+            rss.guid item.guid, :isPermaLink => false if item.guid
             rss.category item.category if item.category
           end
         end
       end
     end
 
-    open 'imap_to_rss.rss', 'w' do |io|
+    open @output, 'w' do |io|
       io.write rss.to_xml
     end
 

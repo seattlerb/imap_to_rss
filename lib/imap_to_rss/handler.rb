@@ -47,7 +47,8 @@ class IMAPToRSS::Handler
   ##
   # Adds an item to the RSS feed with given parts
 
-  def add_item(title, description, author, pub_date, link = nil, category = nil)
+  def add_item(title, description, author, pub_date, link = nil, guid = nil,
+               category = nil)
     pub_date = case pub_date
                when Time then
                  pub_date
@@ -58,7 +59,7 @@ class IMAPToRSS::Handler
                end
 
     item = IMAPToRSS::RSSItem.new title, description, author, pub_date, link,
-                                  category
+                                  guid, category
 
     @itor.rss_items << item
   end

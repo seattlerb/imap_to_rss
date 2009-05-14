@@ -25,7 +25,8 @@ class IMAPToRSS::Handler::UPS < IMAPToRSS::Handler
 
       description = %{Package shipped: <a href="#{url}">#{tracking_number}</a>}
 
-      add_item mail.subject, description, mail.from, mail.date, url, 'UPS'
+      add_item mail.subject, description, mail.from, mail.date, url,
+               mail.message_id, 'UPS'
     end
   end
 

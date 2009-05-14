@@ -54,7 +54,8 @@ class IMAPToRSS::Handler::Amazon < IMAPToRSS::Handler
   # Adds an RSS item with +subject+, +description+ and +url+
 
   def add_item(subject, description, url)
-    super subject, description, @mail.from, @mail.date, url, 'Amazon'
+    super subject, description, @mail.from, @mail.date, url, @mail.message_id,
+          'Amazon'
   end
 
   ##

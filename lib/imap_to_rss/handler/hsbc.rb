@@ -43,7 +43,7 @@ class IMAPToRSS::Handler::HSBC < IMAPToRSS::Handler
         body.gsub!(/[ \t]*\n/, "\n")
         body = body.split(/\n\n+/).map { |para| "<p>#{para}</p>" }
 
-        body.join "\n\n"
+        description = body.join "\n\n"
       when 'alerts@email.hsbcusa.com' then
         mail.body =~ /^(http:.*)/
 
@@ -53,7 +53,8 @@ class IMAPToRSS::Handler::HSBC < IMAPToRSS::Handler
         next
       end
 
-      add_item mail.subject, description, mail.from, mail.date, url, 'HSBC'
+      add_item mail.subject, description, mail.from, mail.date, url,
+               mail.message_id, 'HSBC'
     end
   end
 
