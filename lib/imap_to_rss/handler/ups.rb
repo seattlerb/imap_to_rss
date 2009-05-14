@@ -1,10 +1,19 @@
 require 'imap_to_rss/handler'
 
+##
+# Turns messages from UPS into links to the tracking page
+
 class IMAPToRSS::Handler::UPS < IMAPToRSS::Handler
+
+  ##
+  # Selects messages with ups in the From header
 
   def initialize
     @search = 'FROM', 'ups'
   end
+
+  ##
+  # Scans +uids+ for UPS tracking numbers and turns them into RSS items
 
   def handle(uids)
     each_message uids, 'text/plain' do |uid, mail|

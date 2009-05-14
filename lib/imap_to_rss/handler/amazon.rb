@@ -1,10 +1,19 @@
 require 'imap_to_rss/handler'
 
+##
+# Handles messages from Amazon
+
 class IMAPToRSS::Handler::Amazon < IMAPToRSS::Handler
+
+  ##
+  # Selects messages with amazon in the From header
 
   def initialize
     @search = 'FROM', 'amazon'
   end
+
+  ##
+  # Turns +uids+ into RSSItems
 
   def handle(uids)
     each_message uids, 'text/plain' do |uid, mail|
@@ -41,9 +50,15 @@ class IMAPToRSS::Handler::Amazon < IMAPToRSS::Handler
     end
   end
 
+  ##
+  # Adds an RSS item with +subject+, +description+ and +url+
+
   def add_item(subject, description, url)
     super subject, description, @mail.from, @mail.date, url, 'Amazon'
   end
+
+  ##
+  # Adds an RSS item from order +order+
 
   def add_order(order)
     items = order.scan(/^(\d+) "(.*?)"/)
@@ -65,6 +80,9 @@ class IMAPToRSS::Handler::Amazon < IMAPToRSS::Handler
     add_item subject, description, url
   end
 
+  ##
+  # Adds an RSS item for an AWS bill
+
   def aws_bill
     @mail.body =~ /^Total: (.*)/
     total = $1
@@ -73,6 +91,9 @@ class IMAPToRSS::Handler::Amazon < IMAPToRSS::Handler
 
     add_item "Amazon Web Services Bill: #{total}", '', $1
   end
+
+  ##
+  # Adds an RSS item for a gift card
 
   def gift_card
     url = "https://www.amazon.com/gp/css/account/payment/view-gc-balance.html"
@@ -98,6 +119,9 @@ class IMAPToRSS::Handler::Amazon < IMAPToRSS::Handler
     add_item subject, description, url
   end
 
+  ##
+  # Adds an RSS item for an order cancellation
+
   def order_cancellation
     @mail.body =~ /order #(.*?) /
     order_number = $1
@@ -112,6 +136,9 @@ class IMAPToRSS::Handler::Amazon < IMAPToRSS::Handler
 
     add_item subject, description, url
   end
+
+  ##
+  # Adds an RSS item for a shipped order
 
   def order_shipped
     @mail.body =~ /^(The following items .*?:\r\n.*?)(Shipping Carrier|Item Subtotal)/m
@@ -153,6 +180,9 @@ class IMAPToRSS::Handler::Amazon < IMAPToRSS::Handler
     add_item subject, description, url
   end
 
+  ##
+  # Adds an RSS item for a shipped order (alternate subject ending with !)
+
   def order_shipped_bang
     @mail.body =~ /this shipment:\r\n\r\n(.*?)\r\n\r\nShip/m
     items = $1.scan(/(\d+) of (.*)/)
@@ -189,6 +219,9 @@ class IMAPToRSS::Handler::Amazon < IMAPToRSS::Handler
     add_item subject, description, url
   end
 
+  ##
+  # Adds an RSS item for an order revision on +order_number+
+
   def order_revision(order_number)
     url = order_url order_number
     subject = "Order Revision (#{order_number})"
@@ -200,6 +233,9 @@ class IMAPToRSS::Handler::Amazon < IMAPToRSS::Handler
     add_item subject, description, url
   end
 
+  ##
+  # Creates an HTML table for +items+
+
   def order_table(items)
     table = "<table>\n<tr><th>Quantity<th>Description\n"
 
@@ -210,6 +246,9 @@ class IMAPToRSS::Handler::Amazon < IMAPToRSS::Handler
 
     table
   end
+
+  ##
+  # Returns the link for order +order_number+
 
   def order_url(order_number)
     "https://www.amazon.com/gp/css/summary/edit.html?ie=UTF8&orderID=#{order_number}"

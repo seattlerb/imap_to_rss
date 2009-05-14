@@ -1,32 +1,37 @@
 = imap_to_rss
 
-* FIX (url)
+* http://seattlerb.rubyforge.org/imap_to_rss
 
 == DESCRIPTION:
 
-FIX (describe your package)
-
-== FEATURES/PROBLEMS:
-
-* FIX (list of features or problems)
+IMAPToRSS turns messages on an IMAP server into RSS entries when the match a
+handler.  Included handlers work for email from Amazon, HSBC and UPS.
+IMAPToRSS automatically loads handlers for any other mail.
 
 == SYNOPSIS:
 
-  FIX (code sample of usage)
+  $ imap_to_rss --boxes INBOX --move _Money
+  [...]
+  $ open imap_to_rss.rss
+
+See IMAPToRSS::Handler for instructions on writing a handler.
 
 == REQUIREMENTS:
 
-* FIX (list of requirements)
+* An IMAP server
+* imap_processor
+* Email matching one of the handlers
 
 == INSTALL:
 
-* FIX (sudo gem install, anything else)
+* gem install imap_to_rss
+* add imap_to_rss to your crontab
 
 == LICENSE:
 
 (The MIT License)
 
-Copyright (c) 2009 FIX
+Copyright (c) 2009 Eric Hodel
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

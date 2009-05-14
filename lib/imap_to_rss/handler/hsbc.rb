@@ -1,10 +1,20 @@
 require 'imap_to_rss/handler'
 
+##
+# Handles messages from HSBC savings and HSBC credit cards
+
 class IMAPToRSS::Handler::HSBC < IMAPToRSS::Handler
+
+  ##
+  # Selects messages with hsbc in the From header
 
   def initialize
     @search = 'FROM', 'hsbc'
   end
+
+  ##
+  # Turns +uids+ into RSS items for bank-to-bank transfers and general
+  # announcements like CC payments due or interest rate changes.
 
   def handle(uids)
     each_message uids, 'text/plain' do |uid, mail|

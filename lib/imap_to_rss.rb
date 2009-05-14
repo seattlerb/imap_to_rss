@@ -7,7 +7,7 @@ require 'nokogiri'
 # IMAPToRSS takes messages from your mailboxes, runs them through handlers,
 # then turns them into an RSS feed.  Handlers can be added via a plugin system
 # so long as they subclass IMAPToRSS::Handler and live in the
-# imap_to_rss/handler/ directory.
+# <tt>imap_to_rss/handler/</tt> directory.
 
 class IMAPToRSS < IMAPProcessor
 
@@ -17,7 +17,8 @@ class IMAPToRSS < IMAPProcessor
   VERSION = '1.0'
 
   ##
-  # An RSS item for the RSS feed.
+  # A Struct representing an RSS item for the RSS feed.  Contains fields
+  # +title+, +description+, +author+, +pub_date+, +link+, +category+.
 
   RSSItem = Struct.new :title, :description, :author, :pub_date,
                        :link, :category
