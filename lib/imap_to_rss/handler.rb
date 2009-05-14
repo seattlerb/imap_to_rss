@@ -1,4 +1,5 @@
 require 'imap_to_rss'
+require 'time'
 
 ##
 # Base message handler class.  Subclass this to define your own handlers.
@@ -30,6 +31,15 @@ class IMAPToRSS::Handler
   # Adds an item to the RSS feed with given parts
 
   def add_item(title, description, author, pub_date, link = nil, category = nil)
+    pub_date = case pub_date
+               when Time then
+                 pub_date
+               when Date, DateTime then
+                 Time.parse pub_date.to_s
+               else
+                 Time.parse pub_date
+               end
+
     item = IMAPToRSS::RSSItem.new title, description, author, pub_date, link,
                                   category
 

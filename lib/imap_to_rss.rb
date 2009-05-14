@@ -31,13 +31,9 @@ class IMAPToRSS < IMAPProcessor
   # Processes command-line options
 
   def self.process_args(args)
-    extra_options = {
-      :Handler => nil,
-    }
-
     add_move
 
-    super __FILE__, args, extra_options do |opts, options|
+    super __FILE__, args do |opts, options|
       handlers = IMAPToRSS::Handler.handlers.map do |handler|
         handler.name.split('::').last
       end
@@ -76,8 +72,26 @@ class IMAPToRSS < IMAPProcessor
     log 'Building RSS feed'
     rss = Nokogiri::XML::Builder.new
 
-    rss_items = @rss_items # will work in Nokogiri > 1.2.3
+    rss_items = @rss_items.sort_by { |rss_item| rss_item.pub_date }
     host = options[:Host]
+
+    copyover = []
+
+    if File.exist? 'imap_to_rss.rss' then
+      doc = nil
+
+      open 'imap_to_rss.rss', 'rb' do |io| doc = Nokogiri::XML io end
+
+      copyover_count = 50 - rss_items.length
+
+      if copyover_count > 0 then
+        items = doc.xpath('//rss/channel/item')
+
+        index = [copyover_count, items.length].min
+
+        copyover = items.to_a[-index..-1]
+      end
+    end
 
     rss.rss :version => '2.0' do
       rss.channel do
@@ -86,6 +100,10 @@ class IMAPToRSS < IMAPProcessor
         rss.description "An RSS feed built from your IMAP server"
         rss.generator "imap_to_rss version #{IMAPToRSS::VERSION}"
         rss.docs 'http://cyber.law.harvard.edu/rss/rss.html'
+
+        copyover.each do |item|
+          rss.send :insert, item
+        end
 
         rss_items.each do |item|
           rss.item do
@@ -141,7 +159,7 @@ class IMAPToRSS < IMAPProcessor
 
         handled = handler.handle messages
 
-        @imap.store uids, '+FLAGS', %w[IMAP_TO_RSS]
+        @imap.store handled, '+FLAGS', %w[IMAP_TO_RSS]
 
         if dest_mailbox then
           @imap.copy handled, dest_mailbox
