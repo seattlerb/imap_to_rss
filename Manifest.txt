@@ -9,4 +9,3 @@ lib/imap_to_rss/handler.rb
 lib/imap_to_rss/handler/amazon.rb
 lib/imap_to_rss/handler/hsbc.rb
 lib/imap_to_rss/handler/ups.rb
-test/test_imap_to_rss.rb
