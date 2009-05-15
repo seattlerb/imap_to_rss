@@ -114,7 +114,6 @@ class IMAPToRSS < IMAPProcessor
     rss.rss :version => '2.0' do
       rss.channel do
         rss.title 'IMAP to RSS'
-        rss.link "imap://#{host}"
         rss.description "An RSS feed built from your IMAP server"
         rss.generator "imap_to_rss version #{IMAPToRSS::VERSION}"
         rss.docs 'http://cyber.law.harvard.edu/rss/rss.html'
