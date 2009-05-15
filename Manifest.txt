@@ -4,7 +4,6 @@ Manifest.txt
 README.txt
 Rakefile
 bin/imap_to_rss
-imap_to_rss.rss
 lib/imap_to_rss.rb
 lib/imap_to_rss/handler.rb
 lib/imap_to_rss/handler/amazon.rb
