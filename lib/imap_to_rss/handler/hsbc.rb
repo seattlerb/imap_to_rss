@@ -27,8 +27,7 @@ class IMAPToRSS::Handler::HSBC < IMAPToRSS::Handler
                       ([ \t]*\r?\n){2,}
                       (.*?)
                       ([ \t]*\r?\n){2,}/mx
-
-        next unless $2
+        next false unless $2
 
         description = $2
       when 'A2ATransfer@us.hsbc.com' then
@@ -37,8 +36,10 @@ class IMAPToRSS::Handler::HSBC < IMAPToRSS::Handler
                       (.*?)
                       ([ \t]*\r?\n){2,}
                       Sincerely,/mx
+        next false unless $2
 
         body = $2
+
         body.gsub!(/[*\r]/, '')
         body.gsub!(/[ \t]*\n/, "\n")
         body = body.split(/\n\n+/).map { |para| "<p>#{para}</p>" }
@@ -46,11 +47,12 @@ class IMAPToRSS::Handler::HSBC < IMAPToRSS::Handler
         description = body.join "\n\n"
       when 'alerts@email.hsbcusa.com' then
         mail.body =~ /^(http:.*)/
+        next false unless $1
 
         url = $1
       else
         log "Unknown From: #{mail.from.join ', '}"
-        next
+        next false
       end
 
       add_item mail.subject, description, mail.from, mail.date, url,

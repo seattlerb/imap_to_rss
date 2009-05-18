@@ -45,7 +45,7 @@ class IMAPToRSS::Handler::Amazon < IMAPToRSS::Handler
         next
       else
         log "Unknown Subject: %p" % @mail.subject
-        next
+        next false
       end
     end
   end

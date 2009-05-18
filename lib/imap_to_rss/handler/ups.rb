@@ -21,6 +21,8 @@ class IMAPToRSS::Handler::UPS < IMAPToRSS::Handler
 
       tracking_number = $1
 
+      next false unless $1
+
       url = "http://wwwapps.ups.com/WebTracking/processRequest?tracknum=#{tracking_number}"
 
       description = %{Package shipped: <a href="#{url}">#{tracking_number}</a>}

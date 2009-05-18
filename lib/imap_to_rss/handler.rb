@@ -45,7 +45,7 @@ class IMAPToRSS::Handler
   #   imap_keywords --no-list --keywords IMAP_TO_RSS --delete
 
   ##
-  # Adds an item to the RSS feed with given parts
+  # Adds an item to the RSS feed with given parts.  Returns the created item
 
   def add_item(title, description, author, pub_date, link = nil, guid = nil,
                category = nil)
@@ -62,6 +62,8 @@ class IMAPToRSS::Handler
                                   guid, category
 
     @itor.rss_items << item
+
+    item
   end
 
   ##

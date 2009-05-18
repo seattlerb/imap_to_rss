@@ -1,3 +1,8 @@
+=== 1.0.1 / 2009-05-18
+
+* 1 bug fix
+  * Don't add items if they don't match
+
 === 1.0 / 2009-05-14
 
 * 1 major enhancement
