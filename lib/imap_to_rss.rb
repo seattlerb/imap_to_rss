@@ -177,6 +177,10 @@ class IMAPToRSS < IMAPProcessor
 
         handled = handler.handle messages
 
+        # only tag handled messages, examined messages may be handled in the
+        # future
+        next if handled.empty?
+
         @imap.store handled, '+FLAGS', %w[IMAP_TO_RSS]
 
         if dest_mailbox then

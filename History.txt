@@ -1,3 +1,8 @@
+=== 1.0.2 / 2009-05-??
+
+* 1 bug fix
+  * Don't crash when found messages weren't handled
+
 === 1.0.1 / 2009-05-18
 
 * 1 bug fix
