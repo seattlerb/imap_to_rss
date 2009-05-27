@@ -183,11 +183,7 @@ class IMAPToRSS < IMAPProcessor
 
         @imap.store handled, '+FLAGS', %w[IMAP_TO_RSS]
 
-        if dest_mailbox then
-          @imap.copy handled, dest_mailbox
-          @imap.store handled, '+FLAGS', [:Deleted]
-          @imap.expunge
-        end
+        move_messages handled, dest_mailbox if dest_mailbox
       end
 
       build_rss
