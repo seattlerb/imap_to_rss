@@ -86,11 +86,11 @@ class IMAPToRSS::Handler::Amazon < IMAPToRSS::Handler
 
   def aws_bill
     @mail.body =~ /^Total: (.*)/
-    total = $1
+    total = $1.strip
 
     @mail.body =~ /^(http.*)/
 
-    add_item "Amazon Web Services Bill: #{total}", '', $1
+    add_item "Amazon Web Services Bill: #{total}", '', $1.strip
   end
 
   ##
@@ -99,20 +99,20 @@ class IMAPToRSS::Handler::Amazon < IMAPToRSS::Handler
   def gift_card
     url = "https://www.amazon.com/gp/css/account/payment/view-gc-balance.html"
     @mail.body =~ /^Amount: (.*)/
-    amount = $1
+    amount = $1.strip
 
     @mail.body =~ /^From: (.*)/
-    from = $1
+    from = $1.strip
 
     @mail.body =~ /^Gift Message: (.*)/
-    message = $1
+    message = $1.strip
 
     @mail.body =~ /^Claim code (.*)/
-    claim_code = $1
+    claim_code = $1.strip
 
     subject = "Amazon Gift Card from #{from} - #{amount}!"
 
-    description = "<p><strong>#{from} send you a #{amount} gift card!</strong>\n\n"
+    description = "<p><strong>#{from} sent you a #{amount} gift card!</strong>\n\n"
     description << "<p>#{message}\n\n"
     description << "<h2>#{claim_code}</h2>\n\n"
     description << "<p><a href=\"#{url}\">Claim your gift card</a>"
@@ -130,8 +130,8 @@ class IMAPToRSS::Handler::Amazon < IMAPToRSS::Handler
     items = @mail.body.scan(/(\d?) of (.*)/)
 
     url = order_url order_number
-    subject = "Amazon order cancelation #{order_number}"
-    description = "<p>You canceled your order:\n\n"
+    subject = "Amazon order cancellation #{order_number}"
+    description = "<p>You cancelled your order:\n\n"
 
     description << order_table(items)
 
@@ -143,15 +143,18 @@ class IMAPToRSS::Handler::Amazon < IMAPToRSS::Handler
 
   def order_shipped
     @mail.body =~ /^(The following items .*?:\r\n.*?)(Shipping Carrier|Item Subtotal)/m
+
     items = $1.map do |item|
       next unless item =~ /\d+\s(.*?)\$[\d.]+\s+(\d+)/
       [$2, $1.strip]
     end.compact
 
-    carrier = $1.strip         if @mail.body =~ /Shipping Carrier: (.*)/
+    carrier = $1.strip         if
+      @mail.body =~ /(?:Shipping Carrier:|Shipped via) (.*)/
     date = $1.strip            if @mail.body =~ /Ship Date: (.*)/
     speed = $1.strip           if @mail.body =~ /Shipping Speed: (.*)/
-    tracking_number = $1.strip if @mail.body =~ /Carrier Tracking ID: (.*)/
+    tracking_number = $1.strip if
+      @mail.body =~ /(?:Carrier Tracking ID|Tracking number): (.*)/
 
     @mail.body =~ /Your shipping address:\r\n\r\n(.*?)\r\n\r\n/m
     address = $1.split("\n").map { |line| line.strip }.join "<br />\n" if $1

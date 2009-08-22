@@ -2,22 +2,18 @@
 
 require 'autotest/restart'
 
-# Autotest.add_hook :initialize do |at|
-#   at.extra_files << "../some/external/dependency.rb"
-#
-#   at.libs << ":../some/external"
-#
-#   at.add_exception 'vendor'
-#
-#   at.add_mapping(/dependency.rb/) do |f, _|
-#     at.files_matching(/test_.*rb$/)
-#   end
-#
-#   %w(TestA TestB).each do |klass|
-#     at.extra_class_map[klass] = "test/test_misc.rb"
-#   end
-# end
+Autotest.add_hook :initialize do |at|
 
-# Autotest.add_hook :run_command do |at|
-#   system "rake build"
-# end
+  at.testlib = 'minitest/unit'
+
+  def at.path_to_classname(s)
+    sep = File::SEPARATOR
+    f = s.sub(/^test#{sep}/, '').sub(/\.rb$/, '').split(sep)
+    f = f.map { |path| path.split(/_|(\d+)/).map { |seg| seg.capitalize }.join }
+    f = f.map { |path| path =~ /^Test/ ? path : "Test#{path}"  }
+    name = f.join('::').sub 'ImapToRss', 'IMAPToRSS'
+    name.sub 'Hsbc', 'HSBC'
+  end
+
+end
+

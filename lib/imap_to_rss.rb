@@ -70,7 +70,7 @@ class IMAPToRSS < IMAPProcessor
   ##
   # Creates a new IMAPToRSS and connects to the selected server.
 
-  def initialize(options)
+  def initialize(options = {})
     super
 
     @handlers = []
