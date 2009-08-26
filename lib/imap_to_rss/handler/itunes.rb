@@ -24,7 +24,7 @@ class IMAPToRSS::Handler::Itunes < IMAPToRSS::Handler
       url = $1
 
       mail.body =~ /^Item\sNumber.*?
-                    (^-+\r\n)
+                    (^-+\r?\n)
                     (.*?)
                     \1/mx
 
