@@ -12,3 +12,4 @@ lib/imap_to_rss/handler/ups.rb
 lib/imap_to_rss/test_case.rb
 test/test_imap_to_rss_handler_amazon.rb
 test/test_imap_to_rss_handler_hsbc.rb
+test/test_imap_to_rss_handler_ups.rb
