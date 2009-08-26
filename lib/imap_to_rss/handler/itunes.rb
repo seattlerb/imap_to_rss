@@ -30,7 +30,7 @@ class IMAPToRSS::Handler::Itunes < IMAPToRSS::Handler
 
       body << "<table>\n<tr><th>Item<th>Price\n"
 
-      $2.scan(/^(\d)\s+(.*?)\s+(Free|\$[\d.]+)/) do |item, name, price|
+      $2.scan(/^([^\s]+)\s+(.*?)\s+(Free|\$[\d.]+)/) do |item, name, price|
         body << "<tr><td>#{name}<td>#{price}\n"
       end
 
