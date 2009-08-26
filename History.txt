@@ -1,4 +1,12 @@
-=== 1.0.2 / 2009-05-??
+=== 1.1 / 2009-08-??
+
+* 1 major enhancement
+  * Added iTunes handler
+
+* 1 bug fix
+  * Fixed various bugs in the Amazon handler
+
+=== 1.0.2 / 2009-05-21
 
 * 1 bug fix
   * Don't crash when found messages weren't handled

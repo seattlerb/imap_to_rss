@@ -2,6 +2,10 @@ require 'imap_to_rss/test_case'
 
 class IMAPToRSS::Handler::UPS
   attr_accessor :_mail
+
+  def each_message(a, b)
+    yield nil, @_mail
+  end
 end
 
 class TestIMAPToRSSHandlerUPS < IMAPToRSS::TestCase
@@ -51,10 +55,6 @@ processRequest?HTMLVersion=3D5.0&Requester=3DNES&AgreeToTermsAndConditions=
 
 _______________________________________________________________
     BODY
-
-    def @handler.each_message(a, b)
-      yield nil, @_mail
-    end
 
     @handler.handle nil
 

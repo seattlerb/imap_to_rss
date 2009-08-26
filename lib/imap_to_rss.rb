@@ -14,7 +14,7 @@ class IMAPToRSS < IMAPProcessor
   ##
   # The version of IMAPToRSS you are using
 
-  VERSION = '1.0.1'
+  VERSION = '1.1'
 
   ##
   # A Struct representing an RSS item for the RSS feed.  Contains fields
