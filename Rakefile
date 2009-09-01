@@ -5,6 +5,8 @@ require 'hoe'
 
 Hoe.add_include_dirs "../../imap_processor/dev/lib"
 
+Hoe.plugin :seattlerb
+
 Hoe.spec 'imap_to_rss' do
   developer 'Eric Hodel', 'drbrain@example.com'
 
