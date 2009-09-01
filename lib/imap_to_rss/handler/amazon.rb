@@ -156,18 +156,20 @@ class IMAPToRSS::Handler::Amazon < IMAPToRSS::Handler
     tracking_number = $1.strip if
       @mail.body =~ /(?:Carrier Tracking ID|Tracking number): (.*)/
 
-    @mail.body =~ /Your shipping address:\r\n\r\n(.*?)\r\n\r\n/m
+    @mail.body =~ /(?:Your shipping address|This shipment was sent to):\r\n\r\n(.*?)\r\n\r\n/m
     address = $1.split("\n").map { |line| line.strip }.join "<br />\n" if $1
 
     if tracking_number then
       url = case carrier
             when 'USPS' then
-                "http://trkcnfrm1.smi.usps.com/PTSInternetWeb/InterLabelInquiry.do?strOrigTrackNum=#{tracking_number}"
+              "http://trkcnfrm1.smi.usps.com/PTSInternetWeb/InterLabelInquiry.do?strOrigTrackNum=#{tracking_number}"
             when 'FedEx' then
-                "http://fedex.com/Tracking?tracknumbers=#{tracking_number}"
+              "http://fedex.com/Tracking?tracknumbers=#{tracking_number}"
+            when 'UPS' then
+              "http://wwwapps.ups.com/WebTracking/processInputRequest?InquiryNumber1=#{tracking_number}"
             else
               log "Unknown carrier: %p" % carrier
-              nil
+              "http://www.google.com/search?q=#{tracking_number}"
             end
     end
 

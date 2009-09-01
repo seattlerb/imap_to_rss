@@ -1,6 +1,6 @@
 require 'imap_to_rss/test_case'
 
-class TestIMAPToRSSHandlerAmazaon < IMAPToRSS::TestCase
+class TestIMAPToRSSHandlerAmazon < IMAPToRSS::TestCase
 
   def setup
     super IMAPToRSS::Handler::Amazon.new
@@ -406,7 +406,7 @@ http://www.amazon.com/
     rss_item = @itor.rss_items.first
     assert_equal 'Your Amazon.com order has shipped (#000-1111111-2222222)',
                  rss_item.title
-    description = <<-DESC
+    description = <<-DESC.strip
 <table>
 <tr><th>Quantity<th>Description
 <tr><td>1<td>2001 - A Space Odyssey [Bl...
@@ -414,11 +414,146 @@ http://www.amazon.com/
 
 <p>Via <a href=\"http://trkcnfrm1.smi.usps.com/PTSInternetWeb/InterLabelInquiry.do?strOrigTrackNum=9102999999999999999999\">USPS</a>
 
+<p>To:<br>
+Eric Hodel<br />
+101 Any Street<br />
+Seattle, WA 98122<br />
+United States
     DESC
     assert_equal description,          rss_item.description
     assert_equal ['from@example.com'], rss_item.author
     assert_equal Time.at(0),           rss_item.pub_date
     assert_equal 'http://trkcnfrm1.smi.usps.com/PTSInternetWeb/InterLabelInquiry.do?strOrigTrackNum=9102999999999999999999',
+                 rss_item.link
+    assert_equal nil,                  rss_item.guid
+    assert_equal 'Amazon',             rss_item.category
+  end
+
+  def test_order_shipped_2
+    @handler.mail = util_mail :subject => 'Your Amazon.com order has shipped (#000-1111111-2222222)',
+                              :body => <<-BODY
+Greetings from Amazon.com.
+
+We thought you'd like to know that we shipped your items, and that this 
+completes your order.  Your order is being shipped and cannot be changed 
+by you or by our customer service department. 
+
+You can track the status of this order, and all your orders, online by 
+visiting Your Account at http://www.amazon.com/gp/css/history/view.html
+
+There you can:
+        * Track your shipment
+        * View the status of unshipped items 
+        * Cancel unshipped items 
+        * Return items 
+        * And do much more
+
+The following items have been shipped to you by Amazon.com: 
+--------------------------------------------------------------------
+ Qty                           Item    Price         Shipped Subtotal
+
+---------------------------------------------------------------------
+
+Amazon.com items (Sold by Amazon.com, LLC):
+
+   1  Fujitsu ScanSnap S1500M In...  $404.99               1  $404.99
+
+Shipped via UPS
+
+Tracking number: 1A222B333333333333
+
+---------------------------------------------------------------------
+                           Item Subtotal:    $404.99
+                  Shipping  and handling:     $11.48
+
+                    Super Saver Discount:    $-11.48
+
+                          Reward Applied:      $0.00
+
+                               Sales Tax:     $38.46
+
+                                   Total:    $443.45
+
+                      Paid by Mastercard:    $443.45
+
+    --------------------------------------------------------------------
+
+This shipment was sent to:
+
+    Eric Hodel
+    101 Any Street
+    Seattle, WA 98122
+    United States
+
+via UPS (estimated delivery date: September  3, 2009).
+
+For your reference, the number you can use to track your package is 
+1A222B333333333333.Visit http://www.amazon.com/wheres-my-stuff to track 
+your shipment.Please note that tracking information may not be available 
+immediately.
+        
+Please note that a signature may be required for the delivery of any
+package where the value of the contents is greater than $400.  If no
+one will be available to sign for this package, you may wish to make
+alternate delivery arrangements with the carrier.
+
+If you need to print an invoice for this order, visit Your Account 
+(www.amazon.com/your-account) and click to view open and recently shipped 
+orders. Find the order in the list and click the "View order" button. 
+You'll find a button to print an invoice on the next page.
+
+If you ever need to return an order, visit our Online Returns Center: 
+www.amazon.com/returns
+
+If you've explored the links on the Your Account page but still need
+assistance with your order, you'll find links to e-mail or call
+Amazon.com Customer Service
+in our Help department at http://www.amazon.com/help/
+
+---------------------------------------------------------------------
+Please be aware that items in this order may be subject to California's
+Electronic Waste Recycling Act. If any items in this order are subject
+to that Act, the seller of that item has elected to pay any fees due
+on your behalf.
+--------------------------------------------------------------------- 
+Please note: This e-mail was sent from a notification-only address
+that cannot accept incoming e-mail. Please do not reply to this message.
+
+Thank you for shopping with us.
+
+---------------------------------------------------------------------
+Amazon.com... and you're done!
+http://www.amazon.com/
+---------------------------------------------------------------------
+
+
+    BODY
+
+    @handler.order_shipped
+
+    assert_equal 1, @itor.rss_items.length
+
+    rss_item = @itor.rss_items.first
+    assert_equal 'Your Amazon.com order has shipped (#000-1111111-2222222)',
+                 rss_item.title
+    description = <<-DESC.strip
+<table>
+<tr><th>Quantity<th>Description
+<tr><td>1<td>Fujitsu ScanSnap S1500M In...
+</table>
+
+<p>Via <a href=\"http://wwwapps.ups.com/WebTracking/processInputRequest?InquiryNumber1=1A222B333333333333\">UPS</a>
+
+<p>To:<br>
+Eric Hodel<br />
+101 Any Street<br />
+Seattle, WA 98122<br />
+United States
+    DESC
+    assert_equal description,          rss_item.description
+    assert_equal ['from@example.com'], rss_item.author
+    assert_equal Time.at(0),           rss_item.pub_date
+    assert_equal 'http://wwwapps.ups.com/WebTracking/processInputRequest?InquiryNumber1=1A222B333333333333',
                  rss_item.link
     assert_equal nil,                  rss_item.guid
     assert_equal 'Amazon',             rss_item.category
